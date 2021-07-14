@@ -26,3 +26,4 @@ for lt, ln, el, na in zip(lat, lon, elev, name):
 map.add_child(fg)
 
 map.save("Map1.html")
+
