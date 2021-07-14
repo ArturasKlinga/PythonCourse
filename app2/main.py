@@ -26,6 +26,8 @@ for lt, ln, el, na in zip(lat, lon, elev, name):
     fg.add_child(folium.CircleMarker(location=[lt, ln], fill=True, radius=6, popup=str(na) + "\n" + str(el) + " m.",
                                      fill_color=color_producer(el), color='grey', fill_opacity=0.7))
 
+fg.add_child(folium.GeoJson(data=open('world.json', 'r', encoding='utf-8-sig').read()))
+
 map.add_child(fg)
 
 map.save("Map1.html")
