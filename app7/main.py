@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import pandas
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0'
@@ -12,29 +13,35 @@ soup = BeautifulSoup(c, "html.parser")
 
 all = soup.find_all("div", {"class": "propertyRow"})
 
+l = []
 for item in all:
-    print(item.find("h4", {"class": "propPrice"}).text.replace("\n", "").replace(" ", ""))
-    print(item.find_all("span", {"class": "propAddressCollapse"})[0].text)
-    print(item.find_all("span", {"class": "propAddressCollapse"})[1].text)
+    d = {"Address": item.find_all("span", {"class": "propAddressCollapse"})[0].text,
+         "Locality": item.find_all("span", {"class": "propAddressCollapse"})[1].text,
+         "Price": item.find("h4", {"class": "propPrice"}).text.replace("\n", "").replace(" ", "")}
     try:
-        print(item.find("span", {"class": "infoBed"}).find("b").text)
+        d["Beds"] = item.find("span", {"class": "infoBed"}).find("b").text
     except:
-        print(None)
+        d["Beds"] = None
     try:
-        print(item.find("span", {"class": "infoSqFt"}).find("b").text)
+        d["Area"] = item.find("span", {"class": "infoSqFt"}).find("b").text
     except:
-        print(None)
+        d["Area"] = None
     try:
-        print(item.find("span", {"class": "infoValueFullBath"}).find("b").text)
+        d["Full Baths"] = item.find("span", {"class": "infoValueFullBath"}).find("b").text
     except:
-        print(None)
+        d["Full Baths"] = None
     try:
-        print(item.find("span", {"class": "infoValueHalfBath"}).find("b").text)
+        d["Half Baths"] = item.find("span", {"class": "infoValueHalfBath"}).find("b").text
     except:
-        print(None)
+        d["Half Baths"] = None
     for column_group in item.find_all("div", {"class": "columnGroup"}):
         for feature_group, feature_name in zip(column_group.find_all("span", {"class": "featureGroup"}),
                                                column_group.find_all("span", {"class": "featureName"})):
             if "Lot Size" in feature_group.text:
-                print(feature_name.text)
-    print(" ")
+                d["Lot Size"] = feature_name.text
+
+    l.append(d)
+
+df = pandas.DataFrame(l)
+df.to_csv("output.csv")
+df.to_excel("output.xlsx")
