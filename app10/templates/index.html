@@ -15,7 +15,9 @@
             </form>
             <div class="output">
                 {{text|safe}}
-
+                {% if btn %}
+                    {% include btn %}
+                {% endif %}
             </div>
         </div>
     </body>
